@@ -9,6 +9,9 @@
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
+    <!-- Leaflet Routing Machine CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -138,6 +141,13 @@
                         <!-- Filled by JavaScript -->
                     </div>
                 </div>
+
+                <div class="landmarks-section">
+                    <h4>📍 Nearby Landmarks</h4>
+                    <div id="landmarks-list" class="landmarks-list">
+                        <!-- Filled by JavaScript -->
+                    </div>
+                </div>
             </div>
 
             <!-- Footer -->
@@ -153,13 +163,33 @@
 
             <!-- Map Legend -->
             <div class="map-legend">
+                <div class="legend-title">Map Legend</div>
                 <div class="legend-item">
                     <span class="marker prediction-marker"></span>
-                    Your Prediction
+                    Your Property
                 </div>
                 <div class="legend-item">
                     <span class="marker comparable-marker"></span>
-                    Comparable Property
+                    Comparable
+                </div>
+                <div class="legend-divider"></div>
+                <div class="legend-item">
+                    <span class="legend-icon">🚇</span> Metro
+                </div>
+                <div class="legend-item">
+                    <span class="legend-icon">🚂</span> Railway
+                </div>
+                <div class="legend-item">
+                    <span class="legend-icon">🚌</span> Bus Stand
+                </div>
+                <div class="legend-item">
+                    <span class="legend-icon">🛒</span> Mall
+                </div>
+                <div class="legend-item">
+                    <span class="legend-icon">🏥</span> Hospital
+                </div>
+                <div class="legend-item">
+                    <span class="legend-icon">🏢</span> IT Park
                 </div>
             </div>
 
@@ -173,6 +203,8 @@
 
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Leaflet Routing Machine -->
+    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.min.js"></script>
     <script src="app.js"></script>
 </body>
 

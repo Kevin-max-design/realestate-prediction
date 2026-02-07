@@ -27,6 +27,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
 
 from models.gnn_model import BangaloreGAT
 from geocoder import geocode_location, get_nearby_properties, BANGALORE_LOCATIONS
+from landmarks import get_nearby_landmarks, get_all_landmarks, LANDMARK_ICONS
 
 
 # ============================================================================
@@ -53,6 +54,7 @@ class PredictionResponse(BaseModel):
     total_estimated_price_formatted: str
     confidence_interval: dict
     nearby_comparables: List[dict]
+    nearby_landmarks: List[dict]
 
 
 class LocationInfo(BaseModel):
@@ -288,6 +290,9 @@ async def predict(request: PredictionRequest):
         ci_lower = price_per_sqft * 0.85
         ci_upper = price_per_sqft * 1.15
         
+        # Get nearby landmarks
+        landmarks = get_nearby_landmarks(coords[0], coords[1], radius_km=5.0, limit_per_type=2)
+        
         return PredictionResponse(
             success=True,
             location=request.location.strip().title(),
@@ -299,7 +304,8 @@ async def predict(request: PredictionRequest):
                 "lower": round(ci_lower, 2),
                 "upper": round(ci_upper, 2)
             },
-            nearby_comparables=comparables
+            nearby_comparables=comparables,
+            nearby_landmarks=landmarks
         )
     
     except Exception as e:
@@ -335,6 +341,17 @@ async def get_stats():
             "median": float(processed_data['price_per_sqft'].median())
         },
         "bhk_distribution": processed_data['bhk'].value_counts().to_dict()
+    }
+
+
+@app.get("/api/landmarks")
+async def get_landmarks():
+    """Get all Bangalore landmarks for map display."""
+    landmarks = get_all_landmarks()
+    return {
+        "total": len(landmarks),
+        "icons": LANDMARK_ICONS,
+        "landmarks": landmarks
     }
 
 

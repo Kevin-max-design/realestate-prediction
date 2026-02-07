@@ -14,7 +14,9 @@ from pathlib import Path
 
 try:
     import xgboost as xgb
-    XGBOOST_AVAILABLE = True
+    # Disable XGBoost temporarily due to segfault issues on macOS
+    XGBOOST_AVAILABLE = False
+    print("Note: XGBoost disabled for stability")
 except ImportError:
     XGBOOST_AVAILABLE = False
     print("XGBoost not available, will skip XGBoost model")
@@ -85,20 +87,25 @@ def train_baseline_models(X_train: np.ndarray, y_train: np.ndarray,
     # 4. XGBoost (if available)
     if XGBOOST_AVAILABLE:
         print("\n4. XGBoost...")
-        xgb_model = xgb.XGBRegressor(
-            n_estimators=100,
-            max_depth=6,
-            learning_rate=0.1,
-            subsample=0.8,
-            colsample_bytree=0.8,
-            random_state=42
-        )
-        xgb_model.fit(X_train, y_train, eval_set=[(X_val, y_val)], verbose=False)
-        y_pred_xgb = xgb_model.predict(X_val)
-        
-        results['XGBoost'] = evaluate_model(y_val, y_pred_xgb)
-        models['xgboost'] = xgb_model
-        print(f"   R² = {results['XGBoost']['r2']:.4f}")
+        try:
+            xgb_model = xgb.XGBRegressor(
+                n_estimators=100,
+                max_depth=6,
+                learning_rate=0.1,
+                subsample=0.8,
+                colsample_bytree=0.8,
+                random_state=42,
+                verbosity=0
+            )
+            xgb_model.fit(X_train, y_train, eval_set=[(X_val, y_val)], verbose=False)
+            y_pred_xgb = xgb_model.predict(X_val)
+            
+            results['XGBoost'] = evaluate_model(y_val, y_pred_xgb)
+            models['xgboost'] = xgb_model
+            print(f"   R² = {results['XGBoost']['r2']:.4f}")
+        except Exception as e:
+            print(f"   ⚠ XGBoost failed: {e}")
+            print("   Skipping XGBoost model...")
     
     # Print comparison
     print("\n" + "="*60)

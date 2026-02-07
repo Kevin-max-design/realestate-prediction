@@ -339,6 +339,159 @@ body {
     color: var(--success);
 }
 
+/* ========== LANDMARKS ========== */
+
+.landmarks-section {
+    margin-top: 20px;
+}
+
+.landmarks-section h4 {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+}
+
+.landmarks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.landmark-item {
+    background: var(--bg-glass);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.landmark-item:hover {
+    background: rgba(99, 102, 241, 0.1);
+    border-color: rgba(99, 102, 241, 0.3);
+}
+
+.landmark-icon {
+    font-size: 18px;
+    width: 24px;
+    text-align: center;
+}
+
+.landmark-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.landmark-name {
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.landmark-distance {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.landmark-direction {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent-primary);
+    padding: 2px 6px;
+    background: rgba(99, 102, 241, 0.15);
+    border-radius: 4px;
+}
+
+.directions-btn {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    border: none;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.directions-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 12px rgba(99, 102, 241, 0.5);
+}
+
+/* Leaflet Routing Machine Styling */
+.leaflet-routing-container {
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: var(--border-radius-sm) !important;
+    color: var(--text-primary) !important;
+    max-height: 300px;
+    overflow-y: auto;
+    font-family: 'Inter', sans-serif !important;
+    box-shadow: 0 10px 40px var(--shadow-color);
+}
+
+.leaflet-routing-container h2 {
+    color: var(--text-primary) !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+}
+
+.leaflet-routing-container h3 {
+    color: var(--text-secondary) !important;
+    font-size: 12px !important;
+}
+
+.leaflet-routing-alt {
+    background: transparent !important;
+    padding: 10px !important;
+}
+
+.leaflet-routing-alt:hover {
+    background: rgba(99, 102, 241, 0.1) !important;
+}
+
+.leaflet-routing-alt table {
+    color: var(--text-secondary) !important;
+    font-size: 12px !important;
+}
+
+.leaflet-routing-alt td {
+    padding: 4px 8px !important;
+}
+
+.leaflet-routing-icon {
+    filter: invert(1);
+}
+
+/* Legend enhancements */
+.legend-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.legend-divider {
+    height: 1px;
+    background: var(--border-color);
+    margin: 8px 0;
+}
+
+.legend-icon {
+    font-size: 14px;
+    width: 16px;
+    text-align: center;
+}
+
 /* ========== FOOTER ========== */
 
 .sidebar-footer {

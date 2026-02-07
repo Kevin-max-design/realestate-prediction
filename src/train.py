@@ -169,8 +169,15 @@ def train(model: nn.Module, data: Data, epochs: int = 500,
     history['test_mae'] = test_mae
     
     with open(save_path / 'training_history.json', 'w') as f:
-        json.dump({k: v if not isinstance(v, list) else [float(x) for x in v] 
-                   for k, v in history.items()}, f, indent=2)
+        serializable_history = {}
+        for k, v in history.items():
+            if isinstance(v, list):
+                serializable_history[k] = [float(x) for x in v]
+            elif isinstance(v, (np.floating, np.integer)):
+                serializable_history[k] = float(v)
+            else:
+                serializable_history[k] = v
+        json.dump(serializable_history, f, indent=2)
     
     return history
 
