@@ -36,19 +36,16 @@ env/
 # Jupyter Notebook
 .ipynb_checkpoints/
 
-# Data files (uncomment if you don't want to track large data files)
-# *.csv
-
-# Model files
-*.pkl
-*.joblib
-*.h5
-*.pt
-*.pth
+# Data files
+data/
+*.csv
 
 # Logs
 *.log
 logs/
+
+# Results
+results/
 
 # OS
 .DS_Store
@@ -57,3 +54,19 @@ Thumbs.db
 # Environment variables
 .env
 .env.local
+
+# Model files
+*.pkl
+*.joblib
+*.h5
+*.pt
+*.pth
+
+# Exceptions for required deployment artifacts
+!checkpoints/
+!checkpoints/scaler_X.joblib
+!checkpoints/scaler_y.joblib
+!checkpoints/le_location.joblib
+!checkpoints/feature_names.json
+!checkpoints/best_gat_model.pt
+!checkpoints/processed_data.csv

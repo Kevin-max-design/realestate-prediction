@@ -28,6 +28,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
 from models.gnn_model import BangaloreGAT
 from geocoder import geocode_location, get_nearby_properties, BANGALORE_LOCATIONS
 from landmarks import get_nearby_landmarks, get_all_landmarks, LANDMARK_ICONS
+from materials_estimator import estimate_materials
 
 
 # ============================================================================
@@ -55,6 +56,7 @@ class PredictionResponse(BaseModel):
     confidence_interval: dict
     nearby_comparables: List[dict]
     nearby_landmarks: List[dict]
+    building_materials: dict
 
 
 class LocationInfo(BaseModel):
@@ -293,6 +295,9 @@ async def predict(request: PredictionRequest):
         # Get nearby landmarks
         landmarks = get_nearby_landmarks(coords[0], coords[1], radius_km=5.0, limit_per_type=2)
         
+        # Estimate building materials
+        materials = estimate_materials(request.total_sqft, request.bhk, request.area_type)
+        
         return PredictionResponse(
             success=True,
             location=request.location.strip().title(),
@@ -305,7 +310,8 @@ async def predict(request: PredictionRequest):
                 "upper": round(ci_upper, 2)
             },
             nearby_comparables=comparables,
-            nearby_landmarks=landmarks
+            nearby_landmarks=landmarks,
+            building_materials=materials
         )
     
     except Exception as e:
@@ -376,4 +382,6 @@ if __name__ == "__main__":
     print("  Frontend: http://localhost:8000/app")
     print("="*50 + "\n")
     
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    # Use PORT env var for Render deployment
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)

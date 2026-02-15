@@ -101,6 +101,12 @@ LANDMARKS = {
         {"name": "Global Tech Park", "lat": 12.9340, "lng": 77.6107, "type": "it_park"},
         {"name": "Embassy Golf Links", "lat": 12.9597, "lng": 77.6510, "type": "it_park"},
     ],
+
+    # Airports
+    "airport": [
+        {"name": "Kempegowda International Airport (BLR)", "lat": 13.1986, "lng": 77.7066, "type": "airport"},
+        {"name": "HAL Airport", "lat": 12.9499, "lng": 77.6681, "type": "airport"},
+    ],
 }
 
 # Emoji icons for landmark types
@@ -111,6 +117,7 @@ LANDMARK_ICONS = {
     "mall": "🛒",
     "hospital": "🏥",
     "it_park": "🏢",
+    "airport": "✈️",
 }
 
 # Color codes for map markers
@@ -121,6 +128,7 @@ LANDMARK_COLORS = {
     "mall": "#8b5cf6",      # Purple
     "hospital": "#10b981",  # Green
     "it_park": "#6366f1",   # Indigo
+    "airport": "#ec4899",   # Pink
 }
 
 

@@ -425,6 +425,114 @@ body {
     box-shadow: 0 0 12px rgba(99, 102, 241, 0.5);
 }
 
+/* ========== BUILDING MATERIALS ========== */
+
+.materials-section {
+    margin-top: 20px;
+    animation: fadeIn 0.4s ease;
+}
+
+.materials-section h4 {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+}
+
+.materials-list {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    max-height: 260px;
+    overflow-y: auto;
+}
+
+.material-item {
+    background: var(--bg-glass);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s ease;
+}
+
+.material-item:hover {
+    background: rgba(99, 102, 241, 0.08);
+    border-color: rgba(99, 102, 241, 0.25);
+}
+
+.material-icon {
+    font-size: 16px;
+    width: 22px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.material-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.material-name {
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.material-qty {
+    font-size: 10px;
+    color: var(--text-muted);
+}
+
+.material-cost {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--warning);
+    white-space: nowrap;
+}
+
+.materials-total {
+    margin-top: 10px;
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(236, 72, 153, 0.08));
+    border: 1px solid rgba(245, 158, 11, 0.25);
+    border-radius: 10px;
+    padding: 14px 16px;
+}
+
+.materials-total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.materials-total-row span:first-child {
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.materials-total-value {
+    font-size: 20px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #f59e0b, #ec4899);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.materials-per-sqft {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    text-align: right;
+}
+
 /* Leaflet Routing Machine Styling */
 .leaflet-routing-container {
     background: var(--bg-card) !important;

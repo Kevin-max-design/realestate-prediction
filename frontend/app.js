@@ -7,7 +7,11 @@
 
 // Configuration
 const CONFIG = {
-    API_BASE_URL: 'http://localhost:8000',
+    // Empty string for relative path (production/same-origin)
+    // Or full URL for development (e.g. Live Server)
+    API_BASE_URL: (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && window.location.port !== '8000'
+        ? 'http://localhost:8000'
+        : '',
     BANGALORE_CENTER: [12.9716, 77.5946],
     DEFAULT_ZOOM: 11,
     TILE_URL: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
@@ -171,7 +175,8 @@ function generateMockPrediction(formData) {
             upper: Math.round(pricePerSqft * 1.15 * 100) / 100
         },
         nearby_comparables: generateMockComparables(mockCoords, formData.bhk),
-        nearby_landmarks: generateMockLandmarks(mockCoords)
+        nearby_landmarks: generateMockLandmarks(mockCoords),
+        building_materials: generateMockMaterials(formData.total_sqft, formData.bhk, formData.area_type)
     };
 }
 
@@ -186,6 +191,8 @@ function generateMockLandmarks(coords) {
         { name: 'Manyata Tech Park', type: 'it_park', icon: '🏢', lat: 13.0474, lng: 77.6229 },
         { name: 'Electronic City Phase 1', type: 'it_park', icon: '🏢', lat: 12.8456, lng: 77.6605 },
         { name: 'Majestic Bus Station', type: 'bus', icon: '🚌', lat: 12.9771, lng: 77.5711 },
+        { name: 'Kempegowda Intl Airport (BLR)', type: 'airport', icon: '✈️', lat: 13.1986, lng: 77.7066 },
+        { name: 'HAL Airport', type: 'airport', icon: '✈️', lat: 12.9499, lng: 77.6681 },
     ];
 
     // Calculate distance and direction for each landmark
@@ -202,9 +209,9 @@ function generateMockLandmarks(coords) {
             direction: dir,
             color: getLandmarkColor(lm.type)
         };
-    }).filter(lm => lm.distance_km <= 8)  // Within 8km
+    }).filter(lm => lm.distance_km <= 30)  // Within 30km (includes airports)
         .sort((a, b) => a.distance_km - b.distance_km)
-        .slice(0, 8);  // Top 8
+        .slice(0, 10);  // Top 10
 
     return result;
 }
@@ -238,7 +245,8 @@ function getLandmarkColor(type) {
         bus: '#f59e0b',
         mall: '#8b5cf6',
         hospital: '#10b981',
-        it_park: '#6366f1'
+        it_park: '#6366f1',
+        airport: '#ec4899'
     };
     return colors[type] || '#6b7280';
 }
@@ -334,6 +342,9 @@ function displayResults(result) {
 
     // Display landmarks
     displayLandmarks(result.nearby_landmarks || []);
+
+    // Display building materials
+    displayMaterials(result.building_materials || null);
 }
 
 function displayLandmarks(landmarks) {
@@ -346,7 +357,7 @@ function displayLandmarks(landmarks) {
             item.className = 'landmark-item';
 
             // Check if transport (bus, railway, metro) - show directions button
-            const isTransport = ['bus', 'railway', 'metro'].includes(lm.type);
+            const isTransport = ['bus', 'railway', 'metro', 'airport'].includes(lm.type);
 
             item.innerHTML = `
                 <span class="landmark-icon">${lm.icon}</span>
@@ -537,7 +548,7 @@ function clearRoute() {
 
 function focusLandmark(lm) {
     // Check if this is a bus or railway station - show route
-    const showRoute = ['bus', 'railway', 'metro'].includes(lm.type);
+    const showRoute = ['bus', 'railway', 'metro', 'airport'].includes(lm.type);
 
     if (showRoute && currentPropertyCoords) {
         showRouteToLandmark(lm);
@@ -609,6 +620,107 @@ function focusComparable(comp) {
             marker.openPopup();
         }
     });
+}
+
+// ============================================================================
+// BUILDING MATERIALS DISPLAY
+// ============================================================================
+
+function displayMaterials(materials) {
+    const section = document.getElementById('materials-section');
+    const list = document.getElementById('materials-list');
+    const totalEl = document.getElementById('materials-total');
+
+    if (!materials || !materials.materials) {
+        section.classList.add('hidden');
+        return;
+    }
+
+    section.classList.remove('hidden');
+    list.innerHTML = '';
+
+    materials.materials.forEach(mat => {
+        const item = document.createElement('div');
+        item.className = 'material-item';
+        item.innerHTML = `
+            <span class="material-icon">${mat.icon}</span>
+            <div class="material-info">
+                <div class="material-name">${mat.name}</div>
+                <div class="material-qty">${mat.quantity.toLocaleString()} ${mat.unit}</div>
+            </div>
+            <div class="material-cost">${mat.cost_formatted}</div>
+        `;
+        list.appendChild(item);
+    });
+
+    totalEl.innerHTML = `
+        <div class="materials-total-row">
+            <span>Total Construction Cost</span>
+            <span class="materials-total-value">${materials.total_cost_formatted}</span>
+        </div>
+        <div class="materials-per-sqft">
+            ${materials.cost_per_sqft_formatted} per sq.ft
+        </div>
+    `;
+}
+
+function generateMockMaterials(totalSqft, bhk, areaType) {
+    const bhkMult = { 1: 0.90, 2: 0.95, 3: 1.00, 4: 1.05, 5: 1.10, 6: 1.15 };
+    const areaMult = {
+        'Super built-up Area': 1.10,
+        'Built-up Area': 1.00,
+        'Plot Area': 0.95,
+        'Carpet Area': 0.90
+    };
+    const mult = (bhkMult[Math.min(bhk, 6)] || 1.0) * (areaMult[areaType] || 1.0);
+
+    const rates = [
+        { name: 'Labour', icon: '👷', perSqft: 1.0, rate: 350, unit: 'lumpsum/sqft' },
+        { name: 'Steel', icon: '🔩', perSqft: 4.5, rate: 75, unit: 'kg' },
+        { name: 'Cement', icon: '🧱', perSqft: 0.4, rate: 400, unit: 'bags (50kg)' },
+        { name: 'Windows Doors', icon: '🪟', perSqft: 1.0, rate: 150, unit: 'lumpsum/sqft' },
+        { name: 'Plumbing', icon: '🚿', perSqft: 1.0, rate: 120, unit: 'lumpsum/sqft' },
+        { name: 'Electrical', icon: '⚡', perSqft: 1.0, rate: 100, unit: 'lumpsum/sqft' },
+        { name: 'Flooring', icon: '🏗️', perSqft: 1.0, rate: 85, unit: 'sq.ft' },
+        { name: 'Bricks', icon: '🧱', perSqft: 8, rate: 10, unit: 'pieces' },
+        { name: 'Sand', icon: '⏳', perSqft: 1.25, rate: 55, unit: 'cubic ft' },
+        { name: 'Painting', icon: '🎨', perSqft: 2.5, rate: 25, unit: 'sq.ft' },
+        { name: 'Aggregate', icon: '🪨', perSqft: 0.65, rate: 45, unit: 'cubic ft' },
+    ];
+
+    let totalCost = 0;
+    const materials = rates.map(r => {
+        const qty = Math.round(r.perSqft * totalSqft * mult * 10) / 10;
+        const cost = Math.round(qty * r.rate);
+        totalCost += cost;
+        return {
+            name: r.name,
+            icon: r.icon,
+            quantity: qty,
+            unit: r.unit,
+            rate: r.rate,
+            cost: cost,
+            cost_formatted: formatINR(cost)
+        };
+    }).sort((a, b) => b.cost - a.cost);
+
+    return {
+        total_sqft: totalSqft,
+        bhk: bhk,
+        area_type: areaType,
+        materials: materials,
+        total_cost: totalCost,
+        total_cost_formatted: formatINR(totalCost),
+        cost_per_sqft: Math.round(totalCost / totalSqft * 100) / 100,
+        cost_per_sqft_formatted: formatINR(Math.round(totalCost / totalSqft))
+    };
+}
+
+function formatINR(amount) {
+    if (amount >= 10000000) return `₹${(amount / 10000000).toFixed(2)} Cr`;
+    if (amount >= 100000) return `₹${(amount / 100000).toFixed(2)} Lakhs`;
+    if (amount >= 1000) return `₹${amount.toLocaleString()}`;
+    return `₹${amount}`;
 }
 
 // ============================================================================
